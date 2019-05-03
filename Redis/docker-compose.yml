@@ -1,0 +1,58 @@
+version: '3'
+services:
+
+    master:
+      image: boyj-redis
+      container_name: master
+      network_mode : host
+
+      build:
+        context: .
+        dockerfile: Dockerfile
+
+      environment:
+        - MASTERHOST=
+        - MASTERPORT=
+        - CLIENTHOST=127.0.0.1
+        - CLIENTPORT=6379
+
+      ports:
+        - 6379:6379
+
+    slave1:
+      image: boyj-redis
+      container_name: slave1
+
+      network_mode : host
+
+      build:
+        context: .
+        dockerfile: Dockerfile
+
+      environment:
+        - MASTERHOST=127.0.0.1
+        - MASTERPORT=6379
+        - CLIENTHOST=127.0.0.1
+        - CLIENTPORT=6380
+
+      ports:
+        - 6380:6380
+
+    slave2:
+      image: boyj-redis
+      container_name: slave2
+
+      network_mode : host
+
+      build:
+        context: .
+        dockerfile: Dockerfile
+
+      environment:
+        - MASTERHOST=127.0.0.1
+        - MASTERPORT=6379
+        - CLIENTHOST=127.0.0.1
+        - CLIENTPORT=6381
+
+      ports:
+        - 6381:6381
