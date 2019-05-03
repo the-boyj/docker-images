@@ -3,6 +3,7 @@ services:
 
   redis-sentinel1:
     image: boyj-redis-sentinel
+    container_name: sentinel1
     build:
       context: .
       dockerfile: Dockerfile
@@ -19,6 +20,7 @@ services:
 
   redis-sentinel2:
     image: boyj-redis-sentinel
+    container_name: sentinel2
     build:
       context: .
       dockerfile: Dockerfile
@@ -35,6 +37,7 @@ services:
 
   redis-sentinel3:
     image: boyj-redis-sentinel
+    container_name: sentinel3
     build:
       context: .
       dockerfile: Dockerfile
