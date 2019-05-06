@@ -1,12 +1,10 @@
 #!/bin/bash
 
 # Discover public and private IP for this instance
-PUBLIC_IPV4="$(curl -qs http://169.254.169.254/2014-11-05/meta-data/public-ipv4)"
-[ -n "$PUBLIC_IPV4" ] || PUBLIC_IPV4="$(curl -qs ipinfo.io/ip)"
-PRIVATE_IPV4="$(curl -qs http://169.254.169.254/2014-11-05/meta-data/local-ipv4)"
-[ -n "$PRIVATE_IPV4" ] || PRIVATE_IPV4="$(ip addr show eth0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)"
-
-# Yes, this does work. See: https://github.com/ianblenke/aws-6to4-docker-ipv6
+[ -n "$PUBLIC_IPV4" ] || PUBLIC_IPV4="$(curl -4 https://icanhazip.com/)"
+[ -n "$PUBLIC_IPV4" ] || PUBLIC_IPV4="$(curl -qs ipinfo.io/ip)" || exit 1
+[ -n "$PRIVATE_IPV4" ] || PRIVATE_IPV4=$(ifconfig | awk '/inet addr/{print substr($2,6)}' | grep -v 127.0.0.1 | tail -n1)
+[ -n "$PRIVATE_IPV4" ] || PRIVATE_IPV4="$(ip addr show eth0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1 | head -n1)" || exit 1
 #IPV6="$(ip -6 addr show eth0 scope global | grep inet6 | awk '{print $2}')"
 
 PORT=${PORT:-3478}
@@ -25,6 +23,8 @@ cat <<EOF > ${TURNSERVER_CONFIG}-template
 listening-port=${PORT}
 min-port=${MIN_PORT}
 max-port=${MAX_PORT}
+web-admin
+web-admin-ip=${PRIVATE_IPV4}
 EOF
 
 if [ "${PUBLIC_IPV4}" != "${PRIVATE_IPV4}" ]; then
