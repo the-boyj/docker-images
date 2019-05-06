@@ -1,6 +1,7 @@
 version: '3'
 services:
   coturn:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -24,3 +25,16 @@ services:
       MIN_PORT: 49152
       MAX_PORT: 65535
       JSON_CONFIG: '{"config":["no-auth", "cli-password=boyj", "realm=boyj", "user=boyj:boyj", "web-admin"]}'
+  netdata:
+    image: netdata/netdata
+    restart: always
+    ports:
+      - 19999:19999
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
