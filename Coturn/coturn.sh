@@ -1,5 +1,5 @@
 #!/bin/bash
-
+  
 # Discover public and private IP for this instance
 [ -n "$PUBLIC_IPV4" ] || PUBLIC_IPV4="$(curl -4 https://icanhazip.com/)"
 [ -n "$PUBLIC_IPV4" ] || PUBLIC_IPV4="$(curl -qs ipinfo.io/ip)" || exit 1
@@ -20,11 +20,17 @@ TURNSERVER_CONFIG=/app/etc/turnserver.conf
 
 cat <<EOF > ${TURNSERVER_CONFIG}-template
 # https://github.com/coturn/coturn/blob/master/examples/etc/turnserver.conf
+listening-ip=${PRIVATE_IPV4}
+relay-ip=${PRIVATE_IPV4}
+external-ip=${PUBLIC_IPV4}/${PRIVATE_IPV4}
 listening-port=${PORT}
+lt-cred-mech
+tls-listening-port=5349
 min-port=${MIN_PORT}
 max-port=${MAX_PORT}
-web-admin
-web-admin-ip=${PRIVATE_IPV4}
+server-name=turn.4boyj.com
+user=boyj:boyj
+realm=boyj
 EOF
 
 if [ "${PUBLIC_IPV4}" != "${PRIVATE_IPV4}" ]; then
@@ -43,10 +49,6 @@ if [ -n "$SSL_CERTIFICATE" ]; then
   echo "$SSL_PRIVATE_KEY" > /app/etc/turn_server_pkey.pem
 
   cat <<EOT >> ${TURNSERVER_CONFIG}-template
-tls-listening-port=${TLS_PORT}
-alt-tls-listening-port=${TLS_ALT_PORT}
-cert=/app/etc/turn_server_cert.pem
-pkey=/app/etc/turn_server_pkey.pem
 EOT
 
 fi
