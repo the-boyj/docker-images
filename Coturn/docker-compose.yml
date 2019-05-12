@@ -24,7 +24,8 @@ services:
       TLS_ALT_PORT: 5350
       MIN_PORT: 49152
       MAX_PORT: 65535
-      JSON_CONFIG: '{"config":["no-auth", "cli-password=boyj", "realm=boyj", "user=boyj:boyj", "web-admin"]}'
+      REALM: "boyj"
+      USER: "boyj:boyj"
   netdata:
     image: netdata/netdata
     restart: always
